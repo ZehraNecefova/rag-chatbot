@@ -1,13 +1,14 @@
-
 # frontend/app.py
-import streamlit as st
-import httpx
 import asyncio
+
+import httpx
+import streamlit as st
 
 st.set_page_config(page_title="RAG Chatbot", layout="wide")
 
 # ---------------- Custom CSS ----------------
-st.markdown("""
+st.markdown(
+    """
 <style>
 body, .stApp { background-color: #FFFFFF; }
 section[data-testid="stSidebar"] { background-color: #EBDFEB !important; }
@@ -17,7 +18,9 @@ input[type="text"] { background-color: #EBDFEB !important; color: #000000 !impor
 input[aria-label="📜 System Instruction"] { background-color: #FFFFFF !important; color: #000000 !important; border: 1px solid #CCCCCC !important; border-radius: 8px !important; padding: 6px !important; }
 .chat-title { font-size: 38px !important; font-weight: bold; color: #4B0082; }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ---------------- Sidebar ----------------
 with st.sidebar:
@@ -59,11 +62,17 @@ messages_container = st.container()
 
 # Show all previous messages (except the one currently being typed/streamed)
 for message in st.session_state.messages:
-    if message.get("bot"):   # only show completed messages
+    if message.get("bot"):  # only show completed messages
         if "user" in message:
-            messages_container.markdown(f"<div class='user-bubble'>🧑 <b>You:</b><br>{message['user']}</div>", unsafe_allow_html=True)
+            messages_container.markdown(
+                f"<div class='user-bubble'>🧑 <b>You:</b><br>{message['user']}</div>",
+                unsafe_allow_html=True,
+            )
         if "bot" in message:
-            messages_container.markdown(f"<div class='bot-bubble'>🤖 <b>Bot:</b><br>{message['bot']}</div>", unsafe_allow_html=True)
+            messages_container.markdown(
+                f"<div class='bot-bubble'>🤖 <b>Bot:</b><br>{message['bot']}</div>",
+                unsafe_allow_html=True,
+            )
 
 # ---------------- Input Form ----------------
 st.divider()
@@ -72,8 +81,8 @@ with st.form(key="chat_form"):
         "Type your message:",
         key="user_input",
         value="",
-        placeholder="Enter your query",   # 👈 added placeholder
-        label_visibility="collapsed"
+        placeholder="Enter your query",  # 👈 added placeholder
+        label_visibility="collapsed",
     )
     send_button = st.form_submit_button("➤ Send")
 
@@ -86,7 +95,10 @@ if send_button and user_input:
         st.session_state.current_chat_index = len(st.session_state.chats) - 1
 
     # Show the just-submitted user message immediately
-    messages_container.markdown(f"<div class='user-bubble'>🧑 <b>You:</b><br>{user_input}</div>", unsafe_allow_html=True)
+    messages_container.markdown(
+        f"<div class='user-bubble'>🧑 <b>You:</b><br>{user_input}</div>",
+        unsafe_allow_html=True,
+    )
 
     # Placeholder for streaming bot reply
     bot_placeholder = messages_container.empty()
@@ -96,22 +108,30 @@ if send_button and user_input:
         answer = ""
         try:
             async with httpx.AsyncClient(timeout=None) as client:
-                async with client.stream("POST", "http://backend:8000/chat-stream", json={
-                    "question": user_input,
-                    "model": model,
-                    "system_instruction": system_instruction
-                }) as response:
+                async with client.stream(
+                    "POST",
+                    "http://backend:8000/chat-stream",
+                    json={
+                        "question": user_input,
+                        "model": model,
+                        "system_instruction": system_instruction,
+                    },
+                ) as response:
                     async for chunk in response.aiter_text():
                         answer += chunk
                         bot_placeholder.markdown(
                             f"<div class='bot-bubble'>🤖 <b>Bot:</b><br>{answer}</div>",
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
         except Exception as e:
-            bot_placeholder.markdown(f"<div class='bot-bubble'>⚠️ Error: {e}</div>", unsafe_allow_html=True)
+            bot_placeholder.markdown(
+                f"<div class='bot-bubble'>⚠️ Error: {e}</div>", unsafe_allow_html=True
+            )
 
         # Save final answer into session_state
         st.session_state.messages[-1]["bot"] = answer
-        st.session_state.chats[st.session_state.current_chat_index] = st.session_state.messages.copy()
+        st.session_state.chats[
+            st.session_state.current_chat_index
+        ] = st.session_state.messages.copy()
 
     asyncio.run(stream_response())

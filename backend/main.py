@@ -1,13 +1,14 @@
 # backend/main.py
+import json
+import os
+import time
+
+import boto3
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import boto3
-import os
-from dotenv import load_dotenv
-import json
-import time
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
 load_dotenv()
 
@@ -29,17 +30,18 @@ app.add_middleware(
 kb_client = boto3.client("bedrock-agent-runtime", region_name=AWS_REGION)
 llm_client = boto3.client("bedrock-runtime", region_name=AWS_REGION)
 
+
 class Query(BaseModel):
     question: str
     model: str = "Claude 3.7 Sonnet"
     system_instruction: str = ""
 
+
 @app.post("/chat-stream")
 async def chat_stream(query: Query):
     # 1️⃣ Retrieve docs from knowledge base
     response = kb_client.retrieve(
-        knowledgeBaseId=KNOWLEDGE_BASE_ID,
-        retrievalQuery={"text": query.question}
+        knowledgeBaseId=KNOWLEDGE_BASE_ID, retrievalQuery={"text": query.question}
     )
     docs = [d["content"]["text"] for d in response["retrievalResults"]]
     context = "\n".join(docs)
@@ -54,12 +56,14 @@ async def chat_stream(query: Query):
     # 3️⃣ Invoke LLM
     llm_response = llm_client.invoke_model(
         modelId="us.anthropic.claude-3-7-sonnet-20250219-v1:0",
-        body=json.dumps({
-            "anthropic_version": "bedrock-2023-05-31",
-            "system": query.system_instruction or "You are a helpful assistant.",
-            "messages": [{"role": "user", "content": prompt_text}],
-            "max_tokens": 10240
-        }).encode("utf-8")
+        body=json.dumps(
+            {
+                "anthropic_version": "bedrock-2023-05-31",
+                "system": query.system_instruction or "You are a helpful assistant.",
+                "messages": [{"role": "user", "content": prompt_text}],
+                "max_tokens": 10240,
+            }
+        ).encode("utf-8"),
     )
 
     # 4️⃣ Parse response
