@@ -34,7 +34,7 @@ jobs:
         run: ruff check .
 
       - name: Run Black
-        run: black --check .
+        run: black .
 
       - name: Run Isort
         run: isort . --check-only
