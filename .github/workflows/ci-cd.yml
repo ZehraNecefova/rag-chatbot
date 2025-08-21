@@ -1,0 +1,67 @@
+name: CI/CD Pipeline
+
+# Trigger workflow on push or PR to main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint-and-build:
+    name: Lint & Build Docker Images
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      # Install linting tools
+      - name: Install Linting Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install black isort ruff
+
+      # Run linting checks
+      - name: Run Ruff
+        run: ruff check .
+
+      - name: Run Black
+        run: black --check .
+
+      - name: Run Isort
+        run: isort . --check-only
+
+      # Build Docker images
+      - name: Build Backend Docker Image
+        run: docker build -t rag-chatbot_backend ./backend
+
+      - name: Build Frontend Docker Image
+        run: docker build -t rag-chatbot_frontend ./frontend
+
+  deploy:
+    name: Deploy to EC2
+    needs: lint-and-build
+    runs-on: self-hosted  # your EC2 runner
+
+    steps:
+      # Checkout code on EC2
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Stop any running containers, rebuild, and start
+      - name: Deploy with Docker Compose
+        run: |
+          docker-compose -f docker-compose.yml down
+          docker-compose -f docker-compose.yml up -d --build
+
+      # Optional: show running containers
+      - name: Verify Deployment
+        run: docker ps
