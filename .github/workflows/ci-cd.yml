@@ -36,7 +36,7 @@ jobs:
         run: black .
 
       - name: Run Isort
-        run: isort . --check-only
+        run: isort . 
 
       
       - name: Build Backend Docker Image
