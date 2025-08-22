@@ -50,6 +50,7 @@ jobs:
     name: Deploy to EC2
     needs: lint-and-build
     runs-on: self-hosted  # your EC2 runner
+    environment: production
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       KNOWLEDGE_BASE_ID: ${{ secrets.KNOWLEDGE_BASE_ID }}
