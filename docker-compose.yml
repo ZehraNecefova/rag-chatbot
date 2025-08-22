@@ -6,8 +6,7 @@ services:
     container_name: rag_backend
     ports:
       - "8000:8000"
-    env_file:
-      - .env
+    
     networks:
       - rag_network
 
