@@ -1,12 +1,9 @@
-# frontend/app.py
 import asyncio
-
 import httpx
 import streamlit as st
 
 st.set_page_config(page_title="RAG Chatbot", layout="wide")
 
-# ---------------- Custom CSS ----------------
 st.markdown(
     """
 <style>
@@ -22,7 +19,6 @@ input[aria-label="📜 System Instruction"] { background-color: #FFFFFF !importa
     unsafe_allow_html=True,
 )
 
-# ---------------- Sidebar ----------------
 with st.sidebar:
     st.title("🤖 RAG Chatbot")
 
@@ -52,17 +48,13 @@ with st.sidebar:
             st.session_state.messages = chat.copy()
             st.session_state.current_chat_index = i
 
-# ---------------- Main Chat Area ----------------
-# ---------------- Main Chat Area ----------------
-# ---------------- Main Chat Area ----------------
+
 st.markdown("<div class='chat-title'>💬 Chat</div>", unsafe_allow_html=True)
 
-# Container for chat
 messages_container = st.container()
 
-# Show all previous messages (except the one currently being typed/streamed)
 for message in st.session_state.messages:
-    if message.get("bot"):  # only show completed messages
+    if message.get("bot"):  
         if "user" in message:
             messages_container.markdown(
                 f"<div class='user-bubble'>🧑 <b>You:</b><br>{message['user']}</div>",
@@ -74,36 +66,34 @@ for message in st.session_state.messages:
                 unsafe_allow_html=True,
             )
 
-# ---------------- Input Form ----------------
 st.divider()
 with st.form(key="chat_form"):
     user_input = st.text_input(
         "Type your message:",
         key="user_input",
         value="",
-        placeholder="Enter your query",  # 👈 added placeholder
+        placeholder="Enter your query",  
         label_visibility="collapsed",
     )
     send_button = st.form_submit_button("➤ Send")
 
 
 if send_button and user_input:
-    # Add new (incomplete) message
     st.session_state.messages.append({"user": user_input, "bot": ""})
     if st.session_state.current_chat_index is None:
         st.session_state.chats.append(st.session_state.messages.copy())
         st.session_state.current_chat_index = len(st.session_state.chats) - 1
 
-    # Show the just-submitted user message immediately
+    
     messages_container.markdown(
         f"<div class='user-bubble'>🧑 <b>You:</b><br>{user_input}</div>",
         unsafe_allow_html=True,
     )
 
-    # Placeholder for streaming bot reply
+    
     bot_placeholder = messages_container.empty()
 
-    # ---------------- Streaming Bot Response ----------------
+    
     async def stream_response():
         answer = ""
         try:
@@ -128,7 +118,7 @@ if send_button and user_input:
                 f"<div class='bot-bubble'>⚠️ Error: {e}</div>", unsafe_allow_html=True
             )
 
-        # Save final answer into session_state
+        
         st.session_state.messages[-1]["bot"] = answer
         st.session_state.chats[
             st.session_state.current_chat_index
