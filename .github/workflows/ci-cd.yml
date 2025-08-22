@@ -50,6 +50,11 @@ jobs:
     name: Deploy to EC2
     needs: lint-and-build
     runs-on: self-hosted  # your EC2 runner
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      KNOWLEDGE_BASE_ID: ${{ secrets.KNOWLEDGE_BASE_ID }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
       # Checkout code on EC2
