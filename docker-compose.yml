@@ -11,6 +11,10 @@ services:
       KNOWLEDGE_BASE_ID: ${KNOWLEDGE_BASE_ID}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
 
     networks:
