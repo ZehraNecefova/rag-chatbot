@@ -27,7 +27,7 @@ app.add_middleware(
 )
 
 # Bedrock clients
-kb_client = boto3.client("bedrock-agent-runtime", region_name=AWS_REGION)
+kb_client = boto3.client("bedrock-runtime", region_name=AWS_REGION)
 llm_client = boto3.client("bedrock-runtime", region_name=AWS_REGION)
 
 
