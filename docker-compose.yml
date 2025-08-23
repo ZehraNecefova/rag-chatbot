@@ -6,6 +6,7 @@ services:
     container_name: rag_backend
     ports:
       - "8000:8000"
+    restart: always
     environment:
       AWS_REGION: ${AWS_REGION}
       KNOWLEDGE_BASE_ID: ${KNOWLEDGE_BASE_ID}
@@ -22,6 +23,7 @@ services:
     container_name: rag_frontend
     ports:
       - "8501:8501"
+    restart: always
     depends_on:
       - backend
     networks:
