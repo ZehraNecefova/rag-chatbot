@@ -13,16 +13,17 @@ A **Retrieval-Augmented Generation (RAG)** chatbot that answers questions using 
 
 ## 🗂 Project Structure
 
+```bash
 rag-chatbot/
-├── backend/ # FastAPI backend code
-│ ├── main.py
-│ └── Dockerfile
-├── frontend/ # Streamlit frontend code
-│ ├── app.py
-│ └── Dockerfile
+├── backend/
+│   ├── main.py
+│   └── Dockerfile
+├── frontend/
+│   ├── app.py
+│   └── Dockerfile
 ├── docker-compose.yml
-└── .env # Environment variables (AWS credentials, KB ID)
-
+└── .env
+```
 
 
 
@@ -69,7 +70,7 @@ docker-compose up --build
 Access the apps:
 
 - **Frontend:** `http://18.205.131.207:8501`
-- **Backend docs:** `http://18.205.131.207:8000/docs`
+- **Backend:** `http://18.205.131.207:8000/docs`
 
 
 
