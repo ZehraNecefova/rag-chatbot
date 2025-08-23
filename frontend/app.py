@@ -94,7 +94,7 @@ if send_button and user_input:
         answer = ""
         try:
             async with httpx.AsyncClient(timeout=None) as client:
-                async with client.stream("POST", "http://localhost:8000/chat-stream", json={
+                async with client.stream("POST", "http://rag_backend:8000/chat-stream", json={
                     "question": user_input,
                     "model": model,
                     "system_instruction": system_instruction
